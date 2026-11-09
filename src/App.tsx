@@ -26,6 +26,7 @@ import { BeginnerGuide } from './components/BeginnerGuide';
 import { ReportHistory } from './components/ReportHistory';
 import { AndroidNotificationBanner } from './components/AndroidNotificationBanner';
 import { InstallGuideModal } from './components/InstallGuideModal';
+import { CloudflareDiagnosticModal } from './components/CloudflareDiagnosticModal';
 import { DailyReport, TokenCandidate, ServerStatus, PriceAlert } from './types';
 import {
   loadAlerts,
@@ -33,6 +34,7 @@ import {
   markAlertTriggered,
   sendPushNotification,
 } from './services/notificationService';
+import { generateRefreshedClientReport } from './services/curatedData';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<TabType>('watchlist');
@@ -49,6 +51,8 @@ export default function App() {
   const [triggeredBannerAlert, setTriggeredBannerAlert] = useState<PriceAlert | null>(null);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isInstallModalOpen, setIsInstallModalOpen] = useState(false);
+  const [isCloudflareModalOpen, setIsCloudflareModalOpen] = useState(false);
+  const [cloudflareErrorMsg, setCloudflareErrorMsg] = useState('');
 
   // Capture PWA install prompt
   useEffect(() => {
@@ -64,21 +68,51 @@ export default function App() {
   const fetchData = async () => {
     try {
       const [todayRes, listRes, statusRes] = await Promise.all([
-        fetch('/api/reports/today'),
-        fetch('/api/reports'),
-        fetch('/api/status'),
+        fetch('/api/reports/today').catch(() => null),
+        fetch('/api/reports').catch(() => null),
+        fetch('/api/status').catch(() => null),
       ]);
 
-      const todayData = await todayRes.json();
-      const listData = await listRes.json();
-      const statusData = await statusRes.json();
+      let hasLoadedToday = false;
+      if (todayRes && todayRes.ok) {
+        const contentType = todayRes.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+          const todayData = await todayRes.json();
+          if (todayData.report) {
+            setReport(todayData.report);
+            hasLoadedToday = true;
+          }
+        }
+      }
 
-      if (todayData.report) setReport(todayData.report);
-      if (listData.reports) setReportsList(listData.reports);
-      if (statusData) setServerStatus(statusData);
+      if (listRes && listRes.ok) {
+        const contentType = listRes.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+          const listData = await listRes.json();
+          if (listData.reports) setReportsList(listData.reports);
+        }
+      }
+
+      if (statusRes && statusRes.ok) {
+        const contentType = statusRes.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+          const statusData = await statusRes.json();
+          if (statusData) setServerStatus(statusData);
+        }
+      }
+
+      if (!hasLoadedToday) {
+        const fallback = generateRefreshedClientReport();
+        setReport(fallback);
+        setReportsList([fallback]);
+      }
+
       setAlerts(loadAlerts());
     } catch (err) {
-      console.error('Failed to load application data:', err);
+      console.warn('Backend API unreachable, using client intelligence fallback:', err);
+      const fallback = generateRefreshedClientReport();
+      setReport(fallback);
+      setReportsList([fallback]);
     } finally {
       setLoading(false);
     }
@@ -87,6 +121,15 @@ export default function App() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  // Run client-side intelligence report refresh
+  const runFallbackScan = () => {
+    const refreshed = generateRefreshedClientReport();
+    setReport(refreshed);
+    setReportsList((prev) => [refreshed, ...prev.filter((r) => r.reportId !== refreshed.reportId)]);
+    setScanMessage('7-Day research intelligence updated!');
+    setTimeout(() => setScanMessage(''), 3000);
+  };
 
   // Periodic price movement and active alert monitor
   useEffect(() => {
@@ -165,18 +208,39 @@ export default function App() {
     setScanMessage('Auditing CEX announcements, DEX pools & social sentiment...');
     try {
       const res = await fetch('/api/scan', { method: 'POST' });
+      const contentType = res.headers.get('content-type') || '';
+
+      if (!res.ok || !contentType.includes('application/json')) {
+        // Cloudflare Pages without functions deployed or 404
+        setCloudflareErrorMsg('Backend endpoint /api/scan is not reachable on your host.');
+        setIsCloudflareModalOpen(true);
+        runFallbackScan();
+        return;
+      }
+
       const data = await res.json();
-      if (data.report) {
+      if (data.missingKey) {
+        setCloudflareErrorMsg(data.error);
+        setIsCloudflareModalOpen(true);
+        if (data.report) {
+          setReport(data.report);
+          setReportsList((prev) => [data.report, ...prev.filter((r) => r.reportId !== data.report.reportId)]);
+        }
+      } else if (data.report) {
         setReport(data.report);
         setReportsList((prev) => [data.report, ...prev.filter((r) => r.reportId !== data.report.reportId)]);
         setScanMessage('Research run completed!');
         setTimeout(() => setScanMessage(''), 3000);
       } else if (data.error) {
-        alert(`Research Scan: ${data.error}`);
+        setCloudflareErrorMsg(data.error);
+        setIsCloudflareModalOpen(true);
+        runFallbackScan();
       }
     } catch (err: any) {
-      console.error('Scan error:', err);
-      alert('Unable to finish scan. Please check internet connection.');
+      console.warn('Scan error, opening Cloudflare notice & running fallback:', err);
+      setCloudflareErrorMsg('Network error connecting to /api/scan.');
+      setIsCloudflareModalOpen(true);
+      runFallbackScan();
     } finally {
       setScanning(false);
     }
@@ -595,6 +659,14 @@ export default function App() {
             : 'https://ais-pre-4rzdn4k62aegfnzb2qddiq-53768250568.europe-west2.run.app'
         }
         deferredPrompt={deferredPrompt}
+      />
+
+      {/* Cloudflare Pages Diagnostic Notice Modal */}
+      <CloudflareDiagnosticModal
+        isOpen={isCloudflareModalOpen}
+        onClose={() => setIsCloudflareModalOpen(false)}
+        errorMessage={cloudflareErrorMsg}
+        onRunFallbackScan={runFallbackScan}
       />
     </div>
   );
