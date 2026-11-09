@@ -84,6 +84,31 @@ export const CandidateCard: React.FC<CandidateCardProps> = ({
 
   const feasibility = candidate.tradeFeasibility10Usd;
 
+  const getNetworkBadge = (net: string) => {
+    const n = (net || '').toLowerCase();
+    if (n.includes('solana') || n.includes('sol')) {
+      return (
+        <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-gradient-to-r from-purple-900/90 to-emerald-950 text-emerald-300 border border-purple-500/50 flex items-center gap-1 shadow-xs">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          Solana
+        </span>
+      );
+    }
+    if (n.includes('bnb') || n.includes('bsc') || n.includes('binance')) {
+      return (
+        <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-amber-950/80 text-amber-300 border border-amber-500/50 flex items-center gap-1 shadow-xs">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+          BNB Chain (Finance)
+        </span>
+      );
+    }
+    return (
+      <span className="text-[11px] font-medium px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
+        {net}
+      </span>
+    );
+  };
+
   return (
     <div className="bg-[#101726] border border-slate-800 hover:border-slate-700/80 rounded-2xl p-4 transition-all duration-200 shadow-lg shadow-black/20">
       {/* Header: Name, Ticker, Network & Status */}
@@ -96,9 +121,7 @@ export const CandidateCard: React.FC<CandidateCardProps> = ({
             <span className="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-cyan-950/70 text-cyan-300 border border-cyan-800/60">
               ${candidate.ticker}
             </span>
-            <span className="text-[11px] font-medium px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
-              {candidate.network}
-            </span>
+            {getNetworkBadge(candidate.network)}
           </div>
           <p className="text-xs text-slate-400 mt-1 flex items-center gap-1">
             <span>Venue:</span>

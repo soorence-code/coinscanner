@@ -3,7 +3,7 @@ import { Calculator, DollarSign, AlertCircle, CheckCircle2, XCircle, Info, Zap }
 import { TradeFeasibility } from '../types';
 
 export const TradeSimulator: React.FC = () => {
-  const [network, setNetwork] = useState('Base');
+  const [network, setNetwork] = useState('Solana');
   const [buyTax, setBuyTax] = useState(0);
   const [sellTax, setSellTax] = useState(0);
   const [poolLiquidity, setPoolLiquidity] = useState(50000);
@@ -40,10 +40,9 @@ export const TradeSimulator: React.FC = () => {
   }, [network, buyTax, sellTax, poolLiquidity, dexPoolActive]);
 
   const presetNetworks = [
-    { name: 'Base', gas: '$0.03', desc: 'Ultra-low L2 fee, optimal for $10 test' },
-    { name: 'Solana', gas: '$0.01', desc: 'Sub-cent gas fee, fast execution' },
-    { name: 'BNB Chain', gas: '$0.35', desc: 'Low BSC gas, good PancakeSwap depth' },
-    { name: 'Arbitrum', gas: '$0.08', desc: 'L2 rollup, reasonable for small trade' },
+    { name: 'Solana', gas: '$0.01', desc: 'Featured: Sub-cent gas fee, fast Raydium/Meteora execution' },
+    { name: 'BNB Chain', gas: '$0.25', desc: 'Featured: Binance Finance, deep PancakeSwap liquidity' },
+    { name: 'Base', gas: '$0.03', desc: 'Low L2 fee, Uniswap/Aerodrome' },
     { name: 'Ethereum Mainnet', gas: '$14.50', desc: 'FAIL: Gas eats >100% of $10 capital' },
   ];
 

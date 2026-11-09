@@ -495,7 +495,7 @@ export async function onRequest(context: {
       const now = new Date();
       const currentWAT = getWATTime(now);
 
-      const prompt = `Research upcoming cryptocurrency token launches and exchange listings over the next 7 days across centralized exchanges and decentralized exchanges. Prioritize tokens accessible on Trust Wallet / MetaMask (Base, BSC, Solana, Arbitrum). Include Nigerian time (WAT), verified contracts, $10 trade viability. Return JSON format with candidates array.`;
+      const prompt = `Research upcoming cryptocurrency token launches and exchange listings over the next 7 days focusing primarily on two networks: 1. SOLANA (Raydium, Meteora, Bybit/KuCoin listings) and 2. BNB CHAIN / BINANCE FINANCE (PancakeSwap, Binance Launchpool, BEP-20 listings). Prioritize tokens accessible on Trust Wallet / MetaMask. Include Nigerian time (WAT), verified contracts, and strict $10 micro-trade economic feasibility (gas, slippage). Return JSON format matching the schema.`;
 
       // Direct REST call to Gemini 3.8 Flash with Google Search grounding
       const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`;

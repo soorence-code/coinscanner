@@ -45,7 +45,8 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [scanning, setScanning] = useState(false);
   const [scanMessage, setScanMessage] = useState('');
-  const [filterActionable, setFilterActionable] = useState<'ALL' | 'ACTIONABLE' | 'OBSERVE' | 'ALERTS'>('ALL');
+  type FilterType = 'ALL' | 'SOLANA' | 'BNB' | 'ACTIONABLE' | 'ALERTS';
+  const [filterActionable, setFilterActionable] = useState<FilterType>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [alerts, setAlerts] = useState<PriceAlert[]>([]);
   const [triggeredBannerAlert, setTriggeredBannerAlert] = useState<PriceAlert | null>(null);
@@ -250,11 +251,16 @@ export default function App() {
   const activeAlertsList = alerts.filter((a) => a.status === 'ACTIVE');
 
   const filteredCandidates = (report?.candidates || []).filter((cand) => {
+    if (filterActionable === 'SOLANA') {
+      const net = (cand.network || '').toLowerCase();
+      if (!net.includes('solana') && !net.includes('sol')) return false;
+    }
+    if (filterActionable === 'BNB') {
+      const net = (cand.network || '').toLowerCase();
+      if (!net.includes('bnb') && !net.includes('bsc') && !net.includes('binance')) return false;
+    }
     if (filterActionable === 'ACTIONABLE') {
       if (cand.actionableStatus !== 'ACTIONABLE_WATCH') return false;
-    }
-    if (filterActionable === 'OBSERVE') {
-      if (cand.actionableStatus !== 'OBSERVE_ONLY') return false;
     }
     if (filterActionable === 'ALERTS') {
       const hasAlert = alerts.some((a) => a.candidateId === cand.id && a.status === 'ACTIVE');
@@ -271,6 +277,16 @@ export default function App() {
     }
     return true;
   });
+
+  const solanaCount = (report?.candidates || []).filter((c) => {
+    const net = (c.network || '').toLowerCase();
+    return net.includes('solana') || net.includes('sol');
+  }).length;
+
+  const bnbCount = (report?.candidates || []).filter((c) => {
+    const net = (c.network || '').toLowerCase();
+    return net.includes('bnb') || net.includes('bsc') || net.includes('binance');
+  }).length;
 
   const actionableCount = (report?.candidates || []).filter(
     (c) => c.actionableStatus === 'ACTIONABLE_WATCH'
@@ -365,8 +381,8 @@ export default function App() {
                   WAT v2.4
                 </span>
               </div>
-              <p className="text-[10px] text-slate-400">
-                7-Day Launch &amp; Listing Intel • $10 Cap
+              <p className="text-[10px] text-cyan-300 font-medium">
+                Solana &amp; BNB Finance • 7-Day Launches • $10 Cap
               </p>
             </div>
           </div>
@@ -487,43 +503,59 @@ export default function App() {
                     onClick={() => setFilterActionable('ALL')}
                     className={`px-3 py-1 rounded-lg font-medium transition-colors whitespace-nowrap ${
                       filterActionable === 'ALL'
-                        ? 'bg-cyan-600 text-white'
+                        ? 'bg-cyan-600 text-white shadow-xs'
                         : 'bg-[#101726] text-slate-400 hover:text-white border border-slate-800'
                     }`}
                   >
-                    All Candidates ({report?.candidates.length || 0})
+                    All ({report?.candidates.length || 0})
                   </button>
+
+                  <button
+                    onClick={() => setFilterActionable('SOLANA')}
+                    className={`px-3 py-1 rounded-lg font-semibold transition-all whitespace-nowrap flex items-center gap-1.5 ${
+                      filterActionable === 'SOLANA'
+                        ? 'bg-gradient-to-r from-purple-600 to-emerald-600 text-white shadow-sm'
+                        : 'bg-[#101726] text-purple-300 hover:text-white border border-purple-800/60'
+                    }`}
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                    <span>Solana ({solanaCount})</span>
+                  </button>
+
+                  <button
+                    onClick={() => setFilterActionable('BNB')}
+                    className={`px-3 py-1 rounded-lg font-semibold transition-all whitespace-nowrap flex items-center gap-1.5 ${
+                      filterActionable === 'BNB'
+                        ? 'bg-amber-600 text-white shadow-sm'
+                        : 'bg-[#101726] text-amber-300 hover:text-white border border-amber-800/60'
+                    }`}
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                    <span>BNB Finance ({bnbCount})</span>
+                  </button>
+
                   <button
                     onClick={() => setFilterActionable('ACTIONABLE')}
                     className={`px-3 py-1 rounded-lg font-medium transition-colors whitespace-nowrap flex items-center gap-1 ${
                       filterActionable === 'ACTIONABLE'
-                        ? 'bg-emerald-600 text-white'
+                        ? 'bg-emerald-600 text-white shadow-xs'
                         : 'bg-[#101726] text-slate-400 hover:text-white border border-slate-800'
                     }`}
                   >
                     <CheckCircle2 className="w-3 h-3 text-emerald-400" />
                     <span>$10 Viable ({actionableCount})</span>
                   </button>
-                  <button
-                    onClick={() => setFilterActionable('OBSERVE')}
-                    className={`px-3 py-1 rounded-lg font-medium transition-colors whitespace-nowrap ${
-                      filterActionable === 'OBSERVE'
-                        ? 'bg-amber-600 text-white'
-                        : 'bg-[#101726] text-slate-400 hover:text-white border border-slate-800'
-                    }`}
-                  >
-                    Observe Only
-                  </button>
+
                   <button
                     onClick={() => setFilterActionable('ALERTS')}
                     className={`px-3 py-1 rounded-lg font-medium transition-colors whitespace-nowrap flex items-center gap-1 ${
                       filterActionable === 'ALERTS'
-                        ? 'bg-cyan-600 text-white'
+                        ? 'bg-cyan-600 text-white shadow-xs'
                         : 'bg-[#101726] text-slate-400 hover:text-white border border-slate-800'
                     }`}
                   >
                     <BellRing className="w-3 h-3 text-cyan-400" />
-                    <span>Alerts Set ({activeAlertsList.length})</span>
+                    <span>Alerts ({activeAlertsList.length})</span>
                   </button>
                 </div>
               </div>

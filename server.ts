@@ -541,14 +541,20 @@ app.post('/api/scan', async (req, res) => {
     const prompt = `You are an elite, conservative cryptocurrency research engine specializing in upcoming token launches and exchange listings for beginner traders observing the market with strict $10 maximum capital limits.
 Current Time: ${now.toISOString()} (Nigerian WAT: ${currentWAT.watFormatted}).
 
+CORE NETWORK FOCUS:
+Focus primarily on two networks:
+1. SOLANA (Raydium, Meteora, Orca, Jupiter, Solana token launches, Bybit/KuCoin/Gate.io listings)
+2. BNB CHAIN / BINANCE FINANCE (PancakeSwap V3, Binance Launchpool, BEP-20 launches, KuCoin/Gate.io listings)
+Both networks feature low gas fees ($0.01-$0.30 roundtrip), making them the ideal ecosystems for the user's $10 micro-trade observation strategy.
+
 TASK:
-Research real upcoming cryptocurrency token launches and exchange listings over the next 7 days across centralized exchanges (Binance, Bybit, KuCoin, Gate.io, OKX, Bitget, MEXC, etc.) and decentralized exchanges (Uniswap, Raydium, Aerodrome, PancakeSwap) and launchpads (Fjord, Seedify).
+Research real upcoming cryptocurrency token launches and exchange listings over the next 7 days across centralized exchanges (Binance, Bybit, KuCoin, Gate.io, OKX, Bitget, MEXC) and decentralized exchanges (Raydium, Meteora, PancakeSwap).
 
 CRITICAL REQUIREMENTS & FILTERS:
-1. Prioritize tokens accessible via Trust Wallet or MetaMask (EVM networks like Base, BSC, Ethereum, Arbitrum, or Solana if supported) before or around the listing.
+1. Focus on Solana and BNB Chain (Finance) tokens accessible via Trust Wallet or MetaMask before or around the listing.
 2. Official Contract Verification: Only treat tokens with verified contract addresses from authoritative project or exchange announcement pages as candidates.
 3. Nigerian Time (WAT / Africa-Lagos, UTC+1): Every candidate must state the exact listing time in WAT.
-4. $10 Position Feasibility: Calculate if a $10 position can realistically be bought and sold after estimated gas, trading fees, and slippage. (Ethereum L1 gas of $10-$20 makes $10 trades impossible; Base/BSC/Solana gas of $0.02-$0.40 makes them feasible).
+4. $10 Position Feasibility: Calculate if a $10 position can realistically be bought and sold after estimated gas, trading fees, and slippage. (Solana gas $0.01 and BNB gas $0.25 make them feasible; reject high gas chains).
 5. Social Quality Audit: Assess observable evidence (recent post frequency, views/likes/replies, community activity). Distinguish organic discussion from bots, giveaways, and unverified hype. Never invent engagement metrics or claim access to private Discord/Telegram data.
 6. Rumor Exclusion: Label unconfirmed rumors clearly and exclude them from actionable candidates.
 7. Entry/Exit Observation Plan: Maximum $10 per trade, entry ~1 hour before announced listing, target exit 3-5 minutes after listing commences. Explicitly warn that pre-listing liquidity dumps and sniper bots can cause 100% loss.

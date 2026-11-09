@@ -77,6 +77,45 @@ export const BeginnerGuide: React.FC = () => {
         </div>
       </div>
 
+      {/* Focus Networks: Solana & BNB Chain */}
+      <div className="bg-[#101726] border border-slate-800 rounded-2xl p-4 space-y-3">
+        <div className="flex items-center gap-2 text-white font-bold text-sm">
+          <Zap className="w-4 h-4 text-amber-400" />
+          <span>Why We Focus on Solana &amp; BNB Chain (Binance Finance)</span>
+        </div>
+        <p className="text-xs text-slate-300 leading-relaxed">
+          Because your maximum trade limit is strictly $10, transaction gas is your greatest vulnerability. Solana and BNB Chain are the only two major ecosystems where micro-trades remain mathematically viable.
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+          <div className="p-3 bg-gradient-to-tr from-purple-950/40 to-slate-900 border border-purple-800/40 rounded-xl space-y-1">
+            <div className="flex items-center justify-between font-bold text-purple-300">
+              <span>⚡ Solana Network</span>
+              <span className="text-[10px] font-mono text-emerald-400">~$0.01 Gas</span>
+            </div>
+            <p className="text-[11px] text-slate-300">
+              Primary DEXes: <strong>Raydium</strong>, <strong>Meteora</strong>, and <strong>Orca</strong>.
+            </p>
+            <p className="text-[10px] text-slate-400">
+              Wallet: Native in <strong>Trust Wallet</strong>. Sub-cent roundtrip fees mean you retain &gt;97% of your $10 capital even after DEX fees.
+            </p>
+          </div>
+
+          <div className="p-3 bg-gradient-to-tr from-amber-950/40 to-slate-900 border border-amber-800/40 rounded-xl space-y-1">
+            <div className="flex items-center justify-between font-bold text-amber-300">
+              <span>🔶 BNB Chain (Binance)</span>
+              <span className="text-[10px] font-mono text-amber-400">~$0.25 Gas</span>
+            </div>
+            <p className="text-[11px] text-slate-300">
+              Primary DEX: <strong>PancakeSwap V3</strong>.
+            </p>
+            <p className="text-[10px] text-slate-400">
+              Wallet: Native in <strong>Trust Wallet</strong> &amp; <strong>MetaMask</strong> with BNB. Deep liquidity pools make slippage minimal for $10 orders.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Trust Wallet & MetaMask Step-by-Step */}
       <div className="bg-[#101726] border border-slate-800 rounded-2xl p-4 space-y-3">
         <div className="flex items-center gap-2 text-white font-bold text-sm">
@@ -86,10 +125,10 @@ export const BeginnerGuide: React.FC = () => {
         <div className="space-y-2 text-xs text-slate-300">
           <div className="p-2.5 bg-[#0b0f19] rounded-xl border border-slate-800">
             <span className="font-semibold text-cyan-400 block mb-0.5">
-              Step 1: Verify the Official Contract Address
+              Step 1: Verify the Official Contract / Mint Address
             </span>
             <p className="text-[11px] text-slate-400">
-              Only copy the contract address directly from the verified exchange announcement page or explorer (BaseScan / Etherscan). Never copy addresses from random Telegram messages or comment sections.
+              For <strong>Solana</strong>, verify the mint on Solscan or Raydium. For <strong>BNB Chain</strong>, verify on BscScan. Never copy addresses from untrusted Telegram forward messages.
             </p>
           </div>
           <div className="p-2.5 bg-[#0b0f19] rounded-xl border border-slate-800">
@@ -97,15 +136,15 @@ export const BeginnerGuide: React.FC = () => {
               Step 2: Add Custom Token in Trust Wallet
             </span>
             <p className="text-[11px] text-slate-400">
-              Open Trust Wallet &gt; Tap top-right Manage Crypto icon &gt; Tap &apos;+&apos; icon &gt; Select Network (e.g. Base, BSC) &gt; Paste Verified Contract Address. The symbol and decimals will auto-populate.
+              Open Trust Wallet &gt; Tap Manage Crypto &gt; Tap &apos;+&apos; &gt; Select Network (Solana or BNB Smart Chain) &gt; Paste Verified Address.
             </p>
           </div>
           <div className="p-2.5 bg-[#0b0f19] rounded-xl border border-slate-800">
             <span className="font-semibold text-cyan-400 block mb-0.5">
-              Step 3: Run Contract Through RugCheck or TokenSniffer
+              Step 3: Run Contract Through RugCheck (Solana) or TokenSniffer (BNB)
             </span>
             <p className="text-[11px] text-slate-400">
-              Before even thinking of buying, paste the contract address into TokenSniffer (for EVM) or RugCheck (for Solana) to confirm 0% tax, no blacklist functions, and locked liquidity.
+              Before observing, paste the contract address into RugCheck (for Solana SPL) or TokenSniffer (for BEP-20) to confirm 0% tax, no freeze authority, and locked liquidity.
             </p>
           </div>
         </div>
