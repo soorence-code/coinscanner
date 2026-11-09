@@ -1,0 +1,6 @@
+{
+  "name": "TokenRadar - Crypto Launch & Listing Watchlist (WAT)",
+  "description": "Daily researched upcoming crypto token launches and exchange listings with Trust Wallet/MetaMask readiness, $10 trade feasibility, and Nigerian WAT timing.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
